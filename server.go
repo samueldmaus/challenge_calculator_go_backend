@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"strconv"
 	_"log"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,7 @@ type Equations struct {
 
 type New struct {
 	EQUATION string `json:"equation"`
-	ANSWER string
+	ANSWER int
 }
 
 const (
@@ -52,7 +53,9 @@ func getEquations(c *gin.Context) {
 	}
 	
 	// select statement for db
-	sqlStatement := `SELECT * FROM challenge_calculator LIMIT 10;`
+	sqlStatement := `SELECT * FROM "challenge_calculator"
+	ORDER BY "id" DESC
+	LIMIT 10;`
 	rows, err := db.Query(sqlStatement)
 	if err != nil {
 		// handle this error better than this
@@ -104,11 +107,28 @@ func addEquation(c *gin.Context) {
 	for i := 0; i < len(neweq.EQUATION); i++ {
 		if neweq.EQUATION[i] == '+' {
 			num_1 := strings.Split(neweq.EQUATION, "+")
-			fmt.Println(num_1[0])
-			fmt.Println(num_1[1])
+			i_0, err := strconv.Atoi(num_1[0])
+			if err != nil {
+				fmt.Println(err)
+			}
+			i_1, err := strconv.Atoi(num_1[1])
+			if err != nil {
+				fmt.Println(err)
+			}
+			EQ_ANSWER := i_0 + i_1
+			neweq.ANSWER = EQ_ANSWER
 		}
 	}
-	fmt.Println(*neweq)
+	sqlStatement := `
+	INSERT INTO challenge_calculator (equation, answer)
+	VALUES ($1, $2)
+	RETURNING id`
+	id := 0
+	err = db.QueryRow(sqlStatement, neweq.EQUATION, neweq.ANSWER).Scan(&id)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(id)
 }
 
 func main(){
