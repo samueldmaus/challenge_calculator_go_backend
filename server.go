@@ -8,6 +8,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
+type Equations struct {
+	ID int
+	EQUATION string
+	ANSWER string
+}
+
 const (
 	host     = "localhost"
 	port     = 5432
@@ -43,21 +49,22 @@ func getEquations(c *gin.Context) {
 		panic(err)
 	  }
 	  defer rows.Close()
+	  
+	  eqs := make([]Equations, 0)
 	  for rows.Next() {
-		var id int
-		var equation string
-		var answer string
-		err = rows.Scan(&id, &equation, &answer)
+		eq := Equations{}
+		err = rows.Scan(&eq.ID, &eq.EQUATION, &eq.ANSWER)
 		if err != nil {
 		  panic(err)
 		}
-		fmt.Println(id, equation, answer)
+		eqs = append(eqs, eq)
 	  }
 	  err = rows.Err()
 	  if err != nil {
 		panic(err)
 	  }
-
+	  fmt.Println(eqs)
+	  c.JSON(200, eqs)
 }
 
 func main(){
