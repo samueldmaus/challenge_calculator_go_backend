@@ -104,8 +104,10 @@ func addEquation(c *gin.Context) {
         panic(err)
 	}
 
-	for i := 0; i < len(neweq.EQUATION); i++ {
-		if neweq.EQUATION[i] == '+' {
+	// very long if/else to check for what operator to use... switch coming
+	for i, c := range neweq.EQUATION {
+		if string(c) == "+" {
+			fmt.Println(i, "add")
 			num_1 := strings.Split(neweq.EQUATION, "+")
 			i_0, err := strconv.Atoi(num_1[0])
 			if err != nil {
@@ -116,6 +118,45 @@ func addEquation(c *gin.Context) {
 				fmt.Println(err)
 			}
 			EQ_ANSWER := i_0 + i_1
+			neweq.ANSWER = EQ_ANSWER
+		} else if string(c) == "-" {
+			fmt.Println(i, "sub")
+			num_1 := strings.Split(neweq.EQUATION, "-")
+			i_0, err := strconv.Atoi(num_1[0])
+			if err != nil {
+				fmt.Println(err)
+			}
+			i_1, err := strconv.Atoi(num_1[1])
+			if err != nil {
+				fmt.Println(err)
+			}
+			EQ_ANSWER := i_0 - i_1
+			neweq.ANSWER = EQ_ANSWER
+		} else if string(c) == "x" {
+			fmt.Println(i, "mult")
+			num_1 := strings.Split(neweq.EQUATION, "x")
+			i_0, err := strconv.Atoi(num_1[0])
+			if err != nil {
+				fmt.Println(err)
+			}
+			i_1, err := strconv.Atoi(num_1[1])
+			if err != nil {
+				fmt.Println(err)
+			}
+			EQ_ANSWER := i_0 * i_1
+			neweq.ANSWER = EQ_ANSWER
+		} else if string(c) == "÷" {
+			fmt.Println(i, "div")
+			num_1 := strings.Split(neweq.EQUATION, "÷")
+			i_0, err := strconv.Atoi(num_1[0])
+			if err != nil {
+				fmt.Println(err)
+			}
+			i_1, err := strconv.Atoi(num_1[1])
+			if err != nil {
+				fmt.Println(err)
+			}
+			EQ_ANSWER := i_0 / i_1
 			neweq.ANSWER = EQ_ANSWER
 		}
 	}
