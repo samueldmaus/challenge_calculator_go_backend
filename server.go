@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"strings"
 	"strconv"
 	_"log"
@@ -173,7 +174,8 @@ func addEquation(c *gin.Context) {
 }
 
 func main(){
-	var port_num string = "5000"
+	//port := "5000"
+	port := os.Getenv("PORT")
 	router := gin.New()
 
 	router.GET("/", sayHi)
@@ -181,6 +183,6 @@ func main(){
 	router.GET("/api/equations", getEquations)
 	router.POST("/api/equations", addEquation)
 	router.Use(cors.Default())
-	router.Run(":" + port_num)
-	fmt.Printf("Listening on port 5000")
+	router.Run(":" + port)
+
 }
