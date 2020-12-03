@@ -34,20 +34,30 @@ func getEquations(c *gin.Context) {
   	err = db.Ping()
   	if err != nil {
     	panic(err)
-  	}
-	var id int
-	var equation string
-	var answer string
-	sqlStatement := `SELECT * FROM challenge_calculator WHERE id=$1;`
-	row := db.QueryRow(sqlStatement, 3)
-	switch err := row.Scan(&id, &equation, &answer); err {
-	case sql.ErrNoRows:
-  		fmt.Println("No rows were returned!")
-	case nil:
-  		fmt.Println(id, equation, answer)
-	default:
+	}
+	
+	sqlStatement := `SELECT * FROM challenge_calculator LIMIT 10;`
+	rows, err := db.Query(sqlStatement)
+	if err != nil {
+		// handle this error better than this
+		panic(err)
+	  }
+	  defer rows.Close()
+	  for rows.Next() {
+		var id int
+		var equation string
+		var answer string
+		err = rows.Scan(&id, &equation, &answer)
+		if err != nil {
 		  panic(err)
-	}	
+		}
+		fmt.Println(id, equation, answer)
+	  }
+	  err = rows.Err()
+	  if err != nil {
+		panic(err)
+	  }
+
 }
 
 func main(){
